@@ -1,4 +1,4 @@
-const FilmList = Vue.component('button-counter', {
+const FilmList = {
     data() {
         return {
             films: JSON.parse(localStorage.getItem('films')) || []
@@ -36,7 +36,7 @@ const FilmList = Vue.component('button-counter', {
                     </tr>
                 </tbody>
                </table>`
-});
+};
 
 const FilmForm = {
     data() {
