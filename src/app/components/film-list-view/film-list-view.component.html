@@ -1,0 +1,24 @@
+<mat-table class="mat-elevation-z8" [dataSource]="films$">
+  <ng-container [matColumnDef]="'id'">
+    <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{ row.id }} </mat-cell>
+  </ng-container>
+
+  <ng-container [matColumnDef]="'title'">
+    <mat-header-cell *matHeaderCellDef>Title</mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{ row.title }} </mat-cell>
+  </ng-container>
+
+  <ng-container [matColumnDef]="'year'">
+    <mat-header-cell *matHeaderCellDef>Year</mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{ row.year }} </mat-cell>
+  </ng-container>
+
+  <ng-container [matColumnDef]="'rating'">
+    <mat-header-cell *matHeaderCellDef>Rating</mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{ row.rating }} </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</mat-table>

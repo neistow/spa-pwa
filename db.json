@@ -1,0 +1,22 @@
+{
+  "films": [
+    {
+      "id": 1,
+      "title": "Ice Age",
+      "year": 2002,
+      "rating": 9
+    },
+    {
+      "id": 2,
+      "title": "Ice Age: The Meltdown",
+      "year": 2006,
+      "rating": 9.5
+    },
+    {
+      "title": "Shrek 1",
+      "year": 2001,
+      "rating": 10,
+      "id": 3
+    }
+  ]
+}
