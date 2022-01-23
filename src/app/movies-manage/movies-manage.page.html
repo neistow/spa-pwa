@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Manage movies</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form class="create-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <ion-item>
+      <ion-label position="floating">Title</ion-label>
+      <ion-input type="text" formControlName="title"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Year</ion-label>
+      <ion-select placeholder="Select Year" formControlName="year">
+        <ion-select-option *ngFor="let year of years" [value]="year">
+          {{ year }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Genre</ion-label>
+      <ion-select placeholder="Select Genre" multiple formControlName="genre">
+        <ion-select-option *ngFor="let genre of genres$ | async" [value]="genre">
+          {{ genre }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Plot</ion-label>
+      <ion-input type="text" formControlName="plot"></ion-input>
+    </ion-item>
+    <ion-button type="submit" expand="block" [disabled]="loading$ | async">Add Movie</ion-button>
+  </form>
+</ion-content>

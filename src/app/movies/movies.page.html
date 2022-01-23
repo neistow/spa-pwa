@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>The Great Movie List</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngIf="movies$ | async as movies else skeletonList">
+    <ion-item *ngFor="let movie of movies">
+      <ion-thumbnail slot="start">
+        <img [src]="movie.poster" [alt]="movie.title + ' poster'">
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ movie.title }} - {{ movie.year }}</h2>
+        <small>{{ movie.genres }}</small>
+        <p>{{ movie.plotSummary }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="fetchMovies()">
+    <ion-infinite-scroll-content [loadingSpinner]="null">
+      <ng-container *ngTemplateOutlet="skeletonList"></ng-container>
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
+
+<ng-template #skeletonList>
+  <ion-list>
+    <ion-item *ngFor="let _ of moviesSkeleton">
+      <ion-thumbnail slot="start">
+        <ion-skeleton-text></ion-skeleton-text>
+      </ion-thumbnail>
+      <ion-label>
+        <h3>
+          <ion-skeleton-text animated style="width: 75%"></ion-skeleton-text>
+        </h3>
+        <p>
+          <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+        </p>
+        <p>
+          <ion-skeleton-text animated style="width: 100%"></ion-skeleton-text>
+        </p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ng-template>
