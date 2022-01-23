@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { Observable } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 import { Movie } from 'src/app/models/movie';
-import { map } from 'rxjs/operators';
-import { PagedList } from 'src/app/models/pagedList';
+import { first, switchMapTo } from 'rxjs/operators';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 interface CreateMovieModel {
   title: string;
@@ -18,30 +17,27 @@ interface CreateMovieModel {
 })
 export class MovieService {
 
-  private readonly apiUrl = environment.apiUrl;
-
   constructor(
-    private client: HttpClient
+    private store: AngularFirestore,
   ) {
   }
 
-  public getMovies(page: number, pageSize: number): Observable<PagedList<Movie>> {
-    return this.client.get<Movie[]>(`${this.apiUrl}/movies`, {
-      params: new HttpParams()
-        .set('_start', (page - 1) * pageSize)
-        .set('_limit', pageSize),
-      observe: 'response'
-    }).pipe(
-      map(r => ({
-        data: r.body,
-        page,
-        pageSize,
-        totalPages: Math.ceil(Number(r.headers.get('x-total-count')) / pageSize)
-      }))
-    );
+  public getMovies(limit: number, after?: string): Observable<Movie[]> {
+    return this.store.collection<Movie>('movies', ref => {
+      const query = ref.orderBy('title').limit(limit);
+      return after ? query.startAfter(after) : query;
+    }).valueChanges({ idField: 'id' })
+      .pipe(first());
   }
 
   public createMovie(model: CreateMovieModel): Observable<void> {
-    return this.client.post<void>(`${this.apiUrl}/movies`, model);
+    return from(
+      this.store.collection<Movie>('movies').add({
+        id: this.store.createId(),
+        ...model
+      })
+    ).pipe(
+      switchMapTo(of())
+    );
   }
 }

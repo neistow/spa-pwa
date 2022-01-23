@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "eto-baza": {
+      "hosting": {
+        "app": [
+          "eto-baza"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "eto-baza"
+  }
+}

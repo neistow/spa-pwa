@@ -23,9 +23,9 @@
     </ion-item>
     <ion-item>
       <ion-label position="floating">Genre</ion-label>
-      <ion-select placeholder="Select Genre" multiple formControlName="genre">
-        <ion-select-option *ngFor="let genre of genres$ | async" [value]="genre">
-          {{ genre }}
+      <ion-select placeholder="Select Genre" multiple formControlName="genres">
+        <ion-select-option *ngFor="let genre of genres$ | async" [value]="genre.id">
+          {{ genre.name }}
         </ion-select-option>
       </ion-select>
     </ion-item>

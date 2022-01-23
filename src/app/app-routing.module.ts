@@ -1,7 +1,10 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { AuthorizedOnlyGuard } from 'src/app/guards/authorized-only.guard';
-import { GuestOnlyGuard } from 'src/app/guards/guest-only.guard';
+import { AngularFireAuthGuard } from '@angular/fire/compat/auth-guard';
+import { canActivate } from '@angular/fire/auth-guard';
+import { map } from 'rxjs/operators';
+
+const guestOnly = () => map(user => user == null);
 
 const routes: Routes = [
   {
@@ -16,14 +19,15 @@ const routes: Routes = [
   {
     path: 'login',
     loadChildren: () => import('./login/login.module').then(m => m.LoginPageModule),
-    canLoad: [GuestOnlyGuard],
-    canActivateChild: [GuestOnlyGuard],
+    canActivate: [AngularFireAuthGuard],
+    data: {
+      authGuardPipe: guestOnly
+    }
   },
   {
     path: 'manage',
     loadChildren: () => import('./movies-manage/movies-manage.module').then(m => m.MoviesManagePageModule),
-    // canLoad: [AuthorizedOnlyGuard],
-    // canActivateChild: [AuthorizedOnlyGuard],
+    canActivate: [AngularFireAuthGuard],
   },
 ];
 

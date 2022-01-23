@@ -1,12 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { BehaviorSubject, concat, Observable, Subject } from 'rxjs';
+import { concat, Observable, ReplaySubject, Subject } from 'rxjs';
 import { Movie } from 'src/app/models/movie';
 import { MovieService } from 'src/app/services/movie.service';
 import { IonInfiniteScroll } from '@ionic/angular';
 import { finalize, map, scan, switchMap, takeWhile, tap, withLatestFrom } from 'rxjs/operators';
 
 interface MovieListModel {
-  id: number;
+  id: string;
   title: string;
   year: string;
   genres: string;
@@ -27,7 +27,7 @@ export class MoviesPage implements OnInit {
   public movies$: Observable<MovieListModel[]>;
   public moviesSkeleton = new Array(6);
 
-  private page$ = new BehaviorSubject<number>(1);
+  private cursor$ = new ReplaySubject<string>(1);
   private fetchNext$ = new Subject<void>();
 
   constructor(
@@ -36,24 +36,31 @@ export class MoviesPage implements OnInit {
   }
 
   public ngOnInit(): void {
-    const initial = this.movieService.getMovies(1, 25);
+    const initial = this.movieService.getMovies(25);
     const infScroll = this.fetchNext$.pipe(
-      withLatestFrom(this.page$),
-      switchMap(([_, page]) => this.movieService.getMovies(page, 10)),
+      withLatestFrom(this.cursor$),
+      switchMap(([_, cursor]) => this.movieService.getMovies(10, cursor)),
     );
 
     this.movies$ = concat(initial, infScroll).pipe(
-      tap(r => this.page$.next(r.page + 1)),
+      tap(result => this.updateCursor(result)),
       tap(_ => this.infiniteScroll.complete()),
-      takeWhile(r => r.totalPages !== this.page$.value, true),
+      takeWhile(r => r.length !== 0),
       finalize(() => this.infiniteScroll.disabled = true),
-      map(r => r.data.map(this.mapToListModel)),
+      map(r => r.map(this.mapToListModel)),
       scan((previous, next) => [...previous, ...next])
     );
   }
 
   public fetchMovies(): void {
     this.fetchNext$.next();
+  }
+
+  private updateCursor(movies: Movie[]): void {
+    const last = movies[movies.length - 1];
+    if (last != null) {
+      this.cursor$.next(last.title);
+    }
   }
 
   private mapToListModel(movie: Movie): MovieListModel {

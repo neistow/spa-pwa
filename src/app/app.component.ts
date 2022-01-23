@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApplicationUser, UserService } from 'src/app/services/user.service';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import firebase from 'firebase/compat';
 
 enum LinkPermission {
   guest,
@@ -33,20 +34,20 @@ export class AppComponent {
   ];
 
   constructor(
-    private userService: UserService,
+    public auth: AngularFireAuth,
     private router: Router
   ) {
-    this.menuLinks$ = this.userService.user$.pipe(
+    this.menuLinks$ = this.auth.user.pipe(
       map(user => this.getUserMenuLinks(user))
     );
   }
 
-  public logout(): void {
-    this.userService.logout();
-    this.router.navigate(['/']);
+  public async logout(): Promise<void> {
+    await this.auth.signOut();
+    await this.router.navigate(['/']);
   }
 
-  private getUserMenuLinks(user: ApplicationUser | null): MenuLink[] {
+  private getUserMenuLinks(user: firebase.User | null): MenuLink[] {
     const userPermission = user === null ? LinkPermission.guest : LinkPermission.authorized;
     return this.menuLinks.filter(l => l.permission === LinkPermission.all || l.permission === userPermission);
   }

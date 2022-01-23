@@ -1,21 +1,20 @@
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { Genre } from 'src/app/models/genre';
+import { first } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GenreService {
 
-  private readonly apiUrl = environment.apiUrl;
-
   constructor(
-    private client: HttpClient
+    private store: AngularFirestore,
   ) {
   }
 
-  public getGenres(): Observable<string[]> {
-    return this.client.get<string[]>(`${this.apiUrl}/genres`);
+  public getGenres(): Observable<Genre[]> {
+    return this.store.collection<Genre>('genres').valueChanges().pipe(first());
   }
 }

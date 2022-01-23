@@ -16,7 +16,7 @@
             </ion-item>
           </ion-menu-toggle>
         </ion-list>
-        <ion-button *ngIf="userService.user$ | async"
+        <ion-button *ngIf="auth.user | async"
                     (click)="logout()"
                     expand="full">
           <ion-icon slot="start" name="exit"></ion-icon>

@@ -1,10 +1,10 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { UserService } from 'src/app/services/user.service';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { from, Subject } from 'rxjs';
+import { catchError, takeUntil } from 'rxjs/operators';
 import { ToastController } from '@ionic/angular';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Component({
   selector: 'app-login',
@@ -14,14 +14,14 @@ import { ToastController } from '@ionic/angular';
 export class LoginPage implements OnDestroy {
 
   public form = this.fb.group({
-    username: [null, [Validators.required, Validators.minLength(3), Validators.maxLength(64)]],
+    email: [null, [Validators.required, Validators.email]],
     password: [null, [Validators.required]]
   });
 
   private unsubscribe = new Subject<void>();
 
   constructor(
-    private userService: UserService,
+    private auth: AngularFireAuth,
     private toast: ToastController,
     private fb: FormBuilder,
     private router: Router,
@@ -40,9 +40,14 @@ export class LoginPage implements OnDestroy {
     }
 
     const model = this.form.value;
-    this.userService.login(model.username, model.password)
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(result => result ? this.handleLoginSuccess() : this.handleLoginFail());
+    from(this.auth.signInWithEmailAndPassword(model.email, model.password))
+      .pipe(
+        takeUntil(this.unsubscribe)
+      )
+      .subscribe(
+        () => this.handleLoginSuccess(),
+        () => this.handleLoginFail()
+      );
   }
 
   private async handleLoginSuccess(): Promise<void> {

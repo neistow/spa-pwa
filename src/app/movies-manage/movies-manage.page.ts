@@ -5,6 +5,7 @@ import { ToastController } from '@ionic/angular';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { GenreService } from 'src/app/services/genre.service';
 import { MovieService } from 'src/app/services/movie.service';
+import { Genre } from 'src/app/models/genre';
 
 @Component({
   selector: 'app-movies-manage',
@@ -18,12 +19,12 @@ export class MoviesManagePage implements OnDestroy {
   public form = this.fb.group({
     title: [null, [Validators.required, Validators.maxLength(128)]],
     year: [null, [Validators.required, Validators.min(1895), Validators.max(this.currentYear)]],
-    genre: [null, [Validators.required]],
+    genres: [null, [Validators.required]],
     plot: [null, [Validators.required]]
   });
 
   public loading$: Observable<boolean>;
-  public genres$: Observable<string[]>;
+  public genres$: Observable<Genre[]>;
   public years: number[];
 
   private loading = new BehaviorSubject(false);
